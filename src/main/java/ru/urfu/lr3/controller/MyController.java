@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.urfu.lr3.exception.UnsupportedCodeException;
 import ru.urfu.lr3.exception.ValidationFailedException;
 import ru.urfu.lr3.model.*;
+import ru.urfu.lr3.service.ModifyRequestService;
 import ru.urfu.lr3.service.ModifyResponseService;
 import ru.urfu.lr3.service.ValidationService;
 import ru.urfu.lr3.util.DateTimeUtil;
@@ -25,18 +26,20 @@ public class MyController {
 
     private final ModifyResponseService modifyResponseService;
     private final ValidationService validationService;
+    private final ModifyRequestService modifyRequestService;
 
     @Autowired
     public MyController(@Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService,
-                        ValidationService validationService) {
+                        ValidationService validationService, ModifyRequestService modifyRequestService) {
         this.modifyResponseService = modifyResponseService;
         this.validationService = validationService;
+        this.modifyRequestService = modifyRequestService;
     }
 
     @PostMapping(value = "/feedback")
     public ResponseEntity<Response> feedback(@Valid @RequestBody Request request, BindingResult bindingResult) {
 
-        log.info("request: {}", request);
+        log.info("42 request: {}", request);
 
         Response response = Response.builder()
                 .uid(request.getUid())
@@ -73,8 +76,10 @@ public class MyController {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         modifyResponseService.modify(response);
+        modifyRequestService.modify(request);
 
-        log.info("response: {}", response);
+//        log.info("81 response: {}", response);
+        log.info("82 request: {}", request);
         return new ResponseEntity<>(response, status);
     }
 }
